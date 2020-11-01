@@ -26,6 +26,48 @@
     - http
     - https
 
+- name: create web root directory
+  file:
+    path: "{{ web_root }}/{{ site_name }}"
+    state: directory
+    mode: 0644
+    owner: root
+    group: root
+    recurse: yes
+
+- name: copy site configuration
+  template:
+    src: ../templates/http.conf.j2
+    dest: "{{ web_sites_dir }}/{{ site_name }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: activate site configuration
+  template:
+    src: ../templates/http.conf.j2
+    dest: "{{ web_sites_enabled_dir }}/{{ site_name }}.conf"
+    state: link
+    owner: root
+    group: root
+    mode: 0644
+
+- name: create ssl config directory
+  file:
+    path: "{{ web_ssl_dir }}"
+    state: directory
+    mode: 0644
+    owner: root
+    group: root
+    recurse: yes
+
+- name: install ssl certificates
+  unarchive:
+    src: ../files/ssl_certificates.tar.gz
+    dest: "{{ web_ssl_dir }}/"
+  notify:
+    - restart_web
+
 - name: checkout website
   git:
     dest: "{{ jsemple_dev_checkout_dir }}"
@@ -56,7 +98,7 @@
 - name: synchronize web root with website
   synchronize:
     src: "{{ jsemple_dev_checkout_dir }}/build/"
-    dest: "{{ web_root }}"
+    dest: "{{ web_root }}/{{ site_name }}"
     delete: yes
     recursive: yes
   delegate_to: "{{ inventory_hostname }}"
@@ -65,36 +107,4 @@
   file:
     path: "{{ jsemple_dev_checkout_dir }}"
     state: absent
-
-- name: copy http configuration
-  template:
-    src: ../templates/http.conf.j2
-    dest: "{{ web_conf_dir }}/http.conf"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: copy https configuration
-  template:
-    src: ../templates/https.conf.j2
-    dest: "{{ web_conf_dir }}/https.conf"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: create ssl config directory
-  file:
-    path: "{{ web_ssl_dir }}"
-    state: directory
-    mode: 0644
-    owner: root
-    group: root
-    recurse: yes
-
-- name: install ssl certificates
-  unarchive:
-    src: ../files/ssl_certificates.tar.gz
-    dest: "{{ web_ssl_dir }}/"
-  notify:
-    - restart_web
 ...

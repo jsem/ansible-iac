@@ -1,7 +1,17 @@
+<VirtualHost *:80>
+  ServerName {{ public_site_name }}
+  ServerAlias {{ site_alias }}
+
+  Redirect permanent https://{{ public_site_name }}
+</VirtualHost>
+
 <VirtualHost *:443>
   ServerName {{ public_site_name }}
-  DocumentRoot {{ web_root }}
+  ServerAlias {{ site_alias }}
+
+  DocumentRoot {{ web_root }}/{{site_name}}
   ServerAdmin {{ system_administrator }}
+
   SSLEngine on
   SSLCertificateFile /etc/httpd/conf.d/ssl/server.crt
   SSLCertificateKeyFile /etc/httpd/conf.d/ssl/server.key

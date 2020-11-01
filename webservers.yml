@@ -2,9 +2,6 @@
 # playbook to install webnservers for the portfolio project
 - name: webservers playbook
   hosts: web
-  vars_files:
-    - group_vars/all.yml
-    - group_vars/web.yml
   
   roles:
     - role: common
