@@ -1,8 +1,7 @@
 ---
 web_root: /var/www/html
-web_sites_dir: /etc/httpd/sites-available
-web_sites_enabled_dir: /etc/httpd/sites-enabled
+web_conf_dir: /etc/httpd/conf.d
 web_ssl_dir: /etc/httpd/conf.d/ssl
-site_alias: "{{ ansible_facts.ansible_fqdn }}"
-site_name: "{{ site }}"
+site_alias: "{{ inventory_hostname }}"
+site_name: site
 ...

@@ -2,7 +2,7 @@
   ServerName {{ public_site_name }}
   ServerAlias {{ site_alias }}
 
-  Redirect permanent https://{{ public_site_name }}
+  Redirect permanent / https://{{ public_site_name }}
 </VirtualHost>
 
 <VirtualHost *:443>
