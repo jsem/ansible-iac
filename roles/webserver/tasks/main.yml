@@ -28,14 +28,14 @@
 
 - name: checkout website
   git:
-    dest: /home/ansible/jsemple-dev
-    repo: git@github.com:jsem/jsemple-dev.git
+    dest: "{{ jsemple_dev_checkout_dir }}"
+    repo: "{{ jsemple_dev_repo }}"
     version: main
     key_file: /root/.ssh/id_rsa
 
 - name: change checkout permissions
   file:
-    path: /home/ansible/jsemple-dev
+    path: "{{ jsemple_dev_checkout_dir }}"
     owner: ansible
     group: ansible
     mode: 0777
@@ -46,16 +46,16 @@
   become: false
   remote_user: ansible
   args:
-    chdir: /home/ansible/jsemple-dev
+    chdir: "{{ jsemple_dev_checkout_dir }}"
 
 - name: build website
   shell: npm run build
   args:
-    chdir: /home/ansible/jsemple-dev
+    chdir: "{{ jsemple_dev_checkout_dir }}"
 
 - name: synchronize web root with website
   synchronize:
-    src: /home/ansible/jsemple-dev/build
+    src: "{{ jsemple_dev_checkout_dir }}/build/"
     dest: "{{ web_root }}"
     delete: yes
     recursive: yes
@@ -63,7 +63,7 @@
 
 - name: remove repo directory
   file:
-    path: /home/ansible/jsemple-dev
+    path: "{{ jsemple_dev_checkout_dir }}"
     state: absent
 
 - name: copy http configuration

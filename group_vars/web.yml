@@ -1,3 +1,5 @@
 ---
 public_site_name: jsemple.dev
+jsemple_dev_checkout_dir: /home/ansible/jsemple-dev
+jsemple_dev_repo: git@github.com:jsem/jsemple-dev.git
 ...
