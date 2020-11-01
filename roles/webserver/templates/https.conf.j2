@@ -1,0 +1,9 @@
+<VirtualHost *:443>
+  ServerName {{ public_site_name }}
+  DocumentRoot {{ web_root }}
+  ServerAdmin {{ system_administrator }}
+  SSLEngine on
+  SSLCertificateFile /etc/httpd/conf.d/ssl/server.crt
+  SSLCertificateKeyFile /etc/httpd/conf.d/ssl/server.key
+  SSLCertificateChainFile /etc/httpd/conf.d/ssl/chain.crt
+</VirtualHost>

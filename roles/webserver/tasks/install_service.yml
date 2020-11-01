@@ -1,0 +1,12 @@
+---
+- name: install package {{ name }}
+  package:
+    name: "{{ package }}"
+    state: present
+
+- name: start service {{ name }}
+  service:
+    name: "{{ service }}"
+    state: started
+    enabled: true
+...

@@ -1,0 +1,6 @@
+---
+web_root: /var/www/html
+web_conf_dir: /etc/httpd/conf.d
+web_ssl_dir: /etc/httpd/conf.d/ssl
+site_name: "{{ ansible_facts.ansible_fqdn }}"
+...

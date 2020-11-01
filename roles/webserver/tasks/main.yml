@@ -1,0 +1,100 @@
+---
+- name: install services
+  include: install_service.yml
+  vars:
+    name: "{{ item.name }}"
+    package: "{{ item.package }}"
+    service: "{{ item.service }}"
+  with_items:
+    - { name: "web server", package: "httpd", service: "httpd" }
+    - { name: "firewall", package: "firewalld", service: "firewalld" }
+
+- name: install extra packages
+  package:
+    name:
+      - mod_ssl
+      - npm
+    state: present
+
+- name: configure firewall
+  firewalld:
+    service: "{{ item }}"
+    immediate: true
+    permanent: yes
+    state: enabled
+  with_items:
+    - http
+    - https
+
+- name: checkout website
+  git:
+    dest: /home/ansible/jsemple-dev
+    repo: git@github.com:jsem/jsemple-dev.git
+    version: main
+    key_file: /root/.ssh/id_rsa
+
+- name: change checkout permissions
+  file:
+    path: /home/ansible/jsemple-dev
+    owner: ansible
+    group: ansible
+    mode: 0777
+    state: directory
+
+- name: install website dependencies
+  shell: npm install
+  become: false
+  remote_user: ansible
+  args:
+    chdir: /home/ansible/jsemple-dev
+
+- name: build website
+  shell: npm run build
+  args:
+    chdir: /home/ansible/jsemple-dev
+
+- name: synchronize web root with website
+  synchronize:
+    src: /home/ansible/jsemple-dev/build
+    dest: "{{ web_root }}"
+    delete: yes
+    recursive: yes
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: remove repo directory
+  file:
+    path: /home/ansible/jsemple-dev
+    state: absent
+
+- name: copy http configuration
+  template:
+    src: ../templates/http.conf.j2
+    dest: "{{ web_conf_dir }}/http.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy https configuration
+  template:
+    src: ../templates/https.conf.j2
+    dest: "{{ web_conf_dir }}/https.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: create ssl config directory
+  file:
+    path: "{{ web_ssl_dir }}"
+    state: directory
+    mode: 0644
+    owner: root
+    group: root
+    recurse: yes
+
+- name: install ssl certificates
+  unarchive:
+    src: ../files/ssl_certificates.tar.gz
+    dest: "{{ web_ssl_dir }}/"
+  notify:
+    - restart_web
+...

@@ -1,0 +1,4 @@
+---
+hostname: "{{ ansible_nodename }}"
+system_administrator: james.robert.semple@gmail.com
+...
