@@ -1,0 +1,9 @@
+---
+- name: Running {{ name }}
+  shell: {{ command }}
+  register: shell_result
+
+- name: "{{ name }} result"
+  debug:
+    var: shell_result
+...

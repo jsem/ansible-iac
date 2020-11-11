@@ -5,7 +5,7 @@ jsemple_dev_repo: git@github.com:jsem/jsemple-dev.git
 backend_checkout_dir: /home/ansible/springboot-backend
 backend_repo: git@github.com:jsem/springboot-backend.git
 site_name: jsemple-dev
-backend_name: jsemple-dev
+backend_name: springboot-backend
 database_name: jsemple-dev
 database_username: $ANSIBLE_VAULT;1.1;AES256
           62333432633336653935363631323439363034333039373061636232303462376330616230306330

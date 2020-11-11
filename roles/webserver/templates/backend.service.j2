@@ -1,0 +1,12 @@
+[Unit]
+Description={{ backend_name }}
+After=syslog.target
+
+[Service]
+User=root
+ExecStart={{ backend_root }}/{{ backend_name }}/{{ backend_name }}.jar
+SuccessExitStatus=143
+ARG1=--spring.config.location={{ backend_root }}/{{ backend_name }}/config/application.yml
+
+[Install]
+WantedBy=multi-user.target
