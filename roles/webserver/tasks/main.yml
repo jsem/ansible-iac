@@ -18,12 +18,22 @@
       - maven
       - postgresql-server
       - postgresql-libs
-      - python-pip
+      - libpq-devel
+      - gcc
+      - platform-python-devel.x86_64
     state: present
 
 - name: install psycopg2
   pip:
     name: psycopg2
+    state: present
+
+- name: enabled httpd proxy
+  include: run_shell.yml
+  vars:
+    name: enabled httpd proxy
+    command: /usr/sbin/setsebool -P httpd_can_network_connect 1
+    ignore_errors: no
 
 - name: configure firewall
   firewalld:
@@ -40,26 +50,42 @@
   vars:
     name: Initializing postgres
     command: postgresql-setup --initdb
+    ignore_errors: yes
+
+- name: set pg hba rules
+  postgresql_pg_hba:
+    state: present
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    contype: host
+    users: "{{ database_username }}"
+    databases: "{{ database_name }}"
+    method: md5
     
 - name: start postgresql
   service:
     name: postgresql
-    state: started
+    state: restarted
     enabled: true
 
 - name: create postgres user
+  become: true
+  become_user: postgres
   postgresql_user:
     name: "{{ database_username }}"
     password: "{{ database_password }}"
     state: present
 
 - name: create postgres database
+  become: true
+  become_user: postgres
   postgresql_db:
     name: "{{ database_name }}"
     owner: "{{ database_username }}"
     state: present
 
 - name: create postgres post table
+  become: true
+  become_user: postgres
   postgresql_table:
     db: "{{ database_name }}"
     table: "post"
@@ -141,10 +167,11 @@
   vars:
     name: Building backend
     command: cd {{ backend_checkout_dir }} && mvn clean install
+    ignore_errors: no
 
 - name: copy backend app
   copy:
-    src: "{{ backend_checkout_dir }}/target/{{ backend_name }}*.jar"
+    src: "{{ backend_checkout_dir }}/target/{{ backend_name }}.jar"
     dest: "{{ backend_root}}/{{ backend_name }}/{{ backend_name }}.jar"
     owner: root
     group: root
