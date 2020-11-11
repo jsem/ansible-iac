@@ -8,7 +8,6 @@
   with_items:
     - { name: "web server", package: "httpd", service: "httpd" }
     - { name: "firewall", package: "firewalld", service: "firewalld" }
-    - { name: "postgresql", package: "postgresql-server", service: "postgresql" }
 
 - name: install extra packages
   package:
@@ -18,6 +17,7 @@
       - npm
       - java-11-openjdk-devel
       - maven
+      - postgresql-server
     state: present
 
 - name: configure firewall
@@ -35,6 +35,12 @@
   vars:
     name: Initializing postgres
     command: postgresql-setup --initdb
+    
+- name: start postgresql
+  service:
+    name: postgresql
+    state: started
+    enabled: true
 
 - name: create postgres user
   postgresql_user:
