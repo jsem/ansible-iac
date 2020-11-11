@@ -17,7 +17,13 @@
       - java-11-openjdk-devel
       - maven
       - postgresql-server
+      - postgresql-libs
+      - python-pip
     state: present
+
+- name: install psycopg2
+  pip:
+    name: psycopg2
 
 - name: configure firewall
   firewalld:
