@@ -12,7 +12,6 @@
 - name: install extra packages
   package:
     name:
-      - mod_proxy
       - mod_ssl
       - npm
       - java-11-openjdk-devel
