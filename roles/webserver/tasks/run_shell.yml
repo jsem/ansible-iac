@@ -1,6 +1,6 @@
 ---
 - name: Running {{ name }}
-  shell: {{ command }}
+  shell: "{{ command }}"
   register: shell_result
 
 - name: "{{ name }} result"
