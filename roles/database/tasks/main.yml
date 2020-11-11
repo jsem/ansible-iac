@@ -1,0 +1,74 @@
+---
+- name: install packages
+  package:
+    name:
+      - postgresql-server
+      - postgresql-libs
+      - libpq-devel
+      - gcc
+      - platform-python-devel.x86_64
+    state: present
+
+- name: install psycopg2
+  pip:
+    name: psycopg2
+    state: present
+
+- name: Initializing postgres
+  include: run_shell.yml
+  vars:
+    name: Initializing postgres
+    command: postgresql-setup --initdb
+    ignore_errors: yes
+
+- name: set pg hba rules
+  postgresql_pg_hba:
+    state: present
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    contype: host
+    users: "{{ database_username }}"
+    databases: "{{ database_name }}"
+    method: md5
+  notify:
+    - restart_db
+    
+- name: start postgresql
+  service:
+    name: postgresql
+    state: restarted
+    enabled: true
+
+- name: create postgres user
+  become: true
+  become_user: postgres
+  postgresql_user:
+    name: "{{ database_username }}"
+    password: "{{ database_password }}"
+    state: present
+
+- name: create postgres database
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: "{{ database_name }}"
+    owner: "{{ database_username }}"
+    state: present
+
+- name: create postgres post table
+  become: true
+  become_user: postgres
+  postgresql_table:
+    db: "{{ database_name }}"
+    table: "post"
+    owner: "{{ database_username }}"
+    state: present
+    columns:
+      - id serial NOT NULL PRIMARY KEY
+      - identifier text NOT NULL UNIQUE
+      - title text NOT NULL
+      - summary text NOT NULL
+      - body text NOT NULL
+      - created_on timestamp with time zone NOT NULL
+      - updated_on timestamp with time zone
+      - visible boolean NOT NULL DEFAULT true
+...

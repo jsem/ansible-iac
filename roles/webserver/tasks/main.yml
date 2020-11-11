@@ -14,18 +14,6 @@
     name:
       - mod_ssl
       - npm
-      - java-11-openjdk-devel
-      - maven
-      - postgresql-server
-      - postgresql-libs
-      - libpq-devel
-      - gcc
-      - platform-python-devel.x86_64
-    state: present
-
-- name: install psycopg2
-  pip:
-    name: psycopg2
     state: present
 
 - name: enabled httpd proxy
@@ -44,62 +32,6 @@
   with_items:
     - http
     - https
-
-- name: Initializing postgres
-  include: run_shell.yml
-  vars:
-    name: Initializing postgres
-    command: postgresql-setup --initdb
-    ignore_errors: yes
-
-- name: set pg hba rules
-  postgresql_pg_hba:
-    state: present
-    dest: /var/lib/pgsql/data/pg_hba.conf
-    contype: host
-    users: "{{ database_username }}"
-    databases: "{{ database_name }}"
-    method: md5
-    
-- name: start postgresql
-  service:
-    name: postgresql
-    state: restarted
-    enabled: true
-
-- name: create postgres user
-  become: true
-  become_user: postgres
-  postgresql_user:
-    name: "{{ database_username }}"
-    password: "{{ database_password }}"
-    state: present
-
-- name: create postgres database
-  become: true
-  become_user: postgres
-  postgresql_db:
-    name: "{{ database_name }}"
-    owner: "{{ database_username }}"
-    state: present
-
-- name: create postgres post table
-  become: true
-  become_user: postgres
-  postgresql_table:
-    db: "{{ database_name }}"
-    table: "post"
-    owner: "{{ database_username }}"
-    state: present
-    columns:
-      - id serial NOT NULL PRIMARY KEY
-      - identifier text NOT NULL UNIQUE
-      - title text NOT NULL
-      - summary text NOT NULL
-      - body text NOT NULL
-      - created_on timestamp with time zone NOT NULL
-      - updated_on timestamp with time zone
-      - visible boolean NOT NULL DEFAULT true
 
 - name: create web root directory
   file:
@@ -134,23 +66,6 @@
   notify:
     - restart_web
 
-- name: create backend directory
-  file:
-    path: "{{ backend_root }}/{{ backend_name }}/config"
-    state: directory
-    mode: 0644
-    owner: root
-    group: root
-    recurse: yes
-
-- name: copy backend configuration
-  template:
-    src: ../templates/application.yml.j2
-    dest: "{{ backend_root}}/{{ backend_name }}/config/application.yml"
-    owner: root
-    group: root
-    mode: 0644
-
 - name: checkout repos
   include: checkout_repo.yml
   vars:
@@ -159,43 +74,7 @@
     repo: "{{ item.repo }}"
     user: "{{ item.user }}"
   with_items:
-    - { name: "backend", checkout_dir: "{{ backend_checkout_dir }}", repo: "{{ backend_repo }}", user: "ansible" }
     - { name: "website", checkout_dir: "{{ jsemple_dev_checkout_dir }}", repo: "{{ jsemple_dev_repo }}", user: "ansible" }
-
-- name: Building backend
-  include: run_shell.yml
-  vars:
-    name: Building backend
-    command: cd {{ backend_checkout_dir }} && mvn clean install
-    ignore_errors: no
-
-- name: copy backend app
-  copy:
-    src: "{{ backend_checkout_dir }}/target/{{ backend_name }}.jar"
-    dest: "{{ backend_root}}/{{ backend_name }}/{{ backend_name }}.jar"
-    owner: root
-    group: root
-    mode: 0755
-    remote_src: yes
-
-- name: remove backend repo directory
-  file:
-    path: "{{ backend_checkout_dir }}"
-    state: absent
-
-- name: copy backend service
-  template:
-    src: ../templates/backend.service.j2
-    dest: "/etc/systemd/system/{{ backend_name }}.service"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: start service {{ backend_name }}
-  service:
-    name: "{{ backend_name }}"
-    state: started
-    enabled: true
 
 - name: install website dependencies
   shell: npm install

@@ -5,5 +5,7 @@
   
   roles:
     - role: common
+    - role: database
+    - role: appserver
     - role: webserver
 ...

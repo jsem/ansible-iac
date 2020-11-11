@@ -1,0 +1,6 @@
+---
+- name: restart_db
+  service:
+    name: postgresql
+    state: restarted
+...
