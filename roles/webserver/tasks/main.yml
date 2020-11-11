@@ -41,17 +41,8 @@
 
 - name: copy site configuration
   template:
-    src: ../templates/http.conf.j2
-    dest: "{{ web_sites_dir }}/{{ site_name }}.conf"
-    owner: root
-    group: root
-    mode: 0644
-
-- name: activate site configuration
-  template:
-    src: ../templates/http.conf.j2
-    dest: "{{ web_sites_enabled_dir }}/{{ site_name }}.conf"
-    state: link
+    src: ../templates/site.conf.j2
+    dest: "{{ web_conf_dir}}/{{ site_name }}.conf"
     owner: root
     group: root
     mode: 0644
