@@ -8,7 +8,7 @@
   with_items:
     - { name: "web server", package: "httpd", service: "httpd" }
     - { name: "firewall", package: "firewalld", service: "firewalld" }
-    - { name: "postgresql", package: "postgresql", service: "postgresql" }
+    - { name: "postgresql", package: "postgresql-server", service: "postgresql" }
 
 - name: install extra packages
   package:
@@ -29,6 +29,12 @@
   with_items:
     - http
     - https
+
+- name: Initializing postgres
+  include: run_shell.yml
+  vars:
+    name: Initializing postgres
+    command: postgresql-setup --initdb
 
 - name: create postgres user
   postgresql_user:
