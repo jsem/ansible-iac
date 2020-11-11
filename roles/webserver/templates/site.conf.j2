@@ -12,6 +12,9 @@
   DocumentRoot {{ web_root }}/{{site_name}}
   ServerAdmin {{ system_administrator }}
 
+  ProxyPass         {{ api_path }}  {{ api_scheme }}://{{ api_host }}:{{ api_port }}{{ api_path }}
+  ProxyPassReverse  {{ api_path }}  {{ api_scheme }}://{{ api_host }}:{{ api_port }}{{ api_path }}
+
   SSLEngine on
   SSLCertificateFile /etc/httpd/conf.d/ssl/server.crt
   SSLCertificateKeyFile /etc/httpd/conf.d/ssl/server.key

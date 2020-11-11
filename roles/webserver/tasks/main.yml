@@ -8,12 +8,16 @@
   with_items:
     - { name: "web server", package: "httpd", service: "httpd" }
     - { name: "firewall", package: "firewalld", service: "firewalld" }
+    - { name: "postgresql", package: "postgresql", service: "postgresql" }
 
 - name: install extra packages
   package:
     name:
+      - mod_proxy
       - mod_ssl
       - npm
+      - java-11-openjdk-devel
+      - maven
     state: present
 
 - name: configure firewall
@@ -68,20 +72,30 @@
   notify:
     - restart_web
 
-- name: checkout website
-  git:
-    dest: "{{ jsemple_dev_checkout_dir }}"
-    repo: "{{ jsemple_dev_repo }}"
-    version: main
-    key_file: /root/.ssh/id_rsa
-
-- name: change checkout permissions
+- name: create backend directory
   file:
-    path: "{{ jsemple_dev_checkout_dir }}"
-    owner: ansible
-    group: ansible
-    mode: 0777
+    path: "{{ backend_root }}/{{ backend_name }}"
     state: directory
+    mode: 0644
+    owner: root
+    group: root
+    recurse: yes
+
+- name: checkout repos
+  include: checkout_repo.yml
+  vars:
+    name: "{{ item.name }}"
+    checkout_dir: "{{ item.checkout_dir }}"
+    repo: "{{ item.repo }}"
+    user: "{{ item.user }}"
+  with_items:
+    - { name: "backend", checkout_dir: "{{ backend_checkout_dir }}", repo: "{{ backend_repo }}", user: "ansible" }
+    - { name: "website", checkout_dir: "{{ jsemple_dev_checkout_dir }}", repo: "{{ jsemple_dev_repo }}", user: "ansible" }
+
+- name: remove backend repo directory
+  file:
+    path: "{{ backend_checkout_dir }}"
+    state: absent
 
 - name: install website dependencies
   shell: npm install
@@ -103,7 +117,7 @@
     recursive: yes
   delegate_to: "{{ inventory_hostname }}"
 
-- name: remove repo directory
+- name: remove website repo directory
   file:
     path: "{{ jsemple_dev_checkout_dir }}"
     state: absent

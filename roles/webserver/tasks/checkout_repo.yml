@@ -1,0 +1,16 @@
+---
+- name: checkout {{ name }}
+  git:
+    dest: "{{ checkout_dir }}"
+    repo: "{{ repo }}"
+    version: main
+    key_file: /root/.ssh/id_rsa
+
+- name: change checkout permissions
+  file:
+    path: "{{ checkout_dir }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0777
+    state: directory
+...

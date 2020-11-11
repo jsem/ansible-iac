@@ -5,4 +5,11 @@ web_sites_enabled_dir: /etc/httpd/sites-enabled
 web_ssl_dir: /etc/httpd/conf.d/ssl
 site_alias: "{{ ansible_facts.ansible_fqdn }}"
 site_name: "{{ site }}"
+api_path: /api
+api_scheme: http
+api_host: localhost
+api_port: 8080
+database_host: localhost
+database_port: 5432
+backend_root: /opt/bin
 ...

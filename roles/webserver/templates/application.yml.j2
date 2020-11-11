@@ -1,0 +1,12 @@
+server: 
+  port: {{ api_port }}
+  servlet: 
+    context-path: /
+
+spring:
+  datasource:
+    url: jdbc:postgresql://{{ database_host }}:{{ database_port }}/{{ database_name }}
+    username: {{ database_username }}
+    password: {{ database_password }}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
