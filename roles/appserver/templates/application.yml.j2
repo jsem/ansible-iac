@@ -10,3 +10,7 @@ spring:
     password: {{ database_password }}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  file:
+    name: /var/log/backend/{{ backend_name }}.log

@@ -7,8 +7,10 @@
     group: root
     mode: 0644
 
-- name: install git 
+- name: install packages
   package:
-    name: git
+    name:
+      - git
+      - logrotate
     state: present
 ...

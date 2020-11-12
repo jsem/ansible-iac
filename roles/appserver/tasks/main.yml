@@ -6,6 +6,23 @@
       - maven
     state: present
 
+- name: create backend log directory
+  file:
+    path: /var/log/backend
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+    recurse: yes
+
+- name: copy backend logrotate configuration
+  template:
+    src: ../templates/backend.logrotate.j2
+    dest: /etc/logrotate.d/{{ backend_name }}.logrotate
+    owner: root
+    group: root
+    mode: 0644
+
 - name: create backend directory
   file:
     path: "{{ backend_root }}/{{ backend_name }}/config"
