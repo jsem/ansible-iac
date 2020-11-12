@@ -75,4 +75,56 @@
       - created_on timestamp with time zone NOT NULL
       - updated_on timestamp with time zone
       - visible boolean NOT NULL DEFAULT true
+
+- name: copy backup script
+  copy:
+    src: ../files/backup.py
+    dest: "{{ script_root }}/{{ project_name }}/backup.py"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: copy backup credentials
+  copy:
+    src: ../files/credentials.json
+    dest: "{{ script_root }}/{{ project_name }}/credentials.json"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: copy backup token
+  copy:
+    src: ../files/token.pickle
+    dest: "{{ script_root }}/{{ project_name }}/token.pickle"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: copy public encryption key file
+  copy:
+    src: ../files/public.pgp
+    dest: /tmp/public.pgp
+    owner: root
+    group: root
+    mode: 0644
+
+- name: import public encryption key
+  include: run_shell.yml
+  vars:
+    name: Building backend
+    command: gpg --import /tmp/public.pgp
+    ignore_errors: no
+
+- name: remove public encryption key file
+  file:
+    path: /tmp/public.pgp
+    state: absent
+
+- name: copy database backup cron
+  template:
+    src: ../templates/backup-database.cron.j2
+    dest: /etc/cron.d/backup-database.cron
+    owner: root
+    group: root
+    mode: 0644
 ...

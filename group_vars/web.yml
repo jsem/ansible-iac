@@ -7,6 +7,7 @@ backend_repo: git@github.com:jsem/springboot-backend.git
 site_name: jsemple-dev
 backend_name: springboot-backend
 database_name: jsemple_dev
+project_name: jsemple-dev
 database_username: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           32313732633562613066666637616334323166613133383333303166663361303164376364643762
