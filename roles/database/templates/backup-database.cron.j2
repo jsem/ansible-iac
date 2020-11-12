@@ -1,1 +1,1 @@
-0 1 * * * python3 {{ script_root }}/{{ project_name }}/backup-database.py
+0 1 * * * root cd {{ script_root }}/{{ project_name }} && python3 backup-database.py >> /var/log/backend/backup-database.log 2>&1

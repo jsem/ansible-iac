@@ -81,6 +81,23 @@
       - updated_on timestamp with time zone
       - visible boolean NOT NULL DEFAULT true
 
+- name: create backup log directory
+  file:
+    path: /var/log/backend
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+    recurse: yes
+
+- name: copy backup logrotate configuration
+  copy:
+    src: ../files/backup-database.logrotate
+    dest: /etc/logrotate.d/backup-database.logrotate
+    owner: root
+    group: root
+    mode: 0644
+
 - name: create scripts directory
   file:
     path: "{{ script_root }}/{{ project_name }}"
