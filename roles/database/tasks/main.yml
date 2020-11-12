@@ -120,7 +120,7 @@
 - name: import public encryption key
   include: run_shell.yml
   vars:
-    name: Building backend
+    name: import public encryption key
     command: gpg --import /tmp/public.pgp
     ignore_errors: no
 
