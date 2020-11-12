@@ -88,7 +88,7 @@
 - name: copy backup script
   copy:
     src: ../files/backup-database.py
-    dest: "{{ script_root }}/{{ project_name }}/backup.py"
+    dest: "{{ script_root }}/{{ project_name }}/backup-database.py"
     owner: root
     group: root
     mode: 0755
