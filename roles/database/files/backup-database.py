@@ -2,9 +2,8 @@
 
 from __future__ import print_function
 import pickle
-import os.path
-import os.remove
-from subprocess import subprocess
+import os
+import subprocess
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
@@ -27,7 +26,7 @@ def dumpPostgres():
     subprocess.run("su -c '/usr/bin/pg_dump --column-inserts --data-only -f /tmp/jsemple-dev-backup.sql jsemple-dev' postgres",shell=True)
 
 def encryptDump():
-    subprocess.run("gpg --output /tmp/jsemple-dev-backup.sql.gpg --encrypt --recipient james.robert.semple@gmail.com jsemple-dev-backup.sql",shell=True)
+    subprocess.run("gpg --output /tmp/jsemple-dev-backup.sql.gpg --encrypt --recipient james.robert.semple@gmail.com /tmp/jsemple-dev-backup.sql",shell=True)
 
 def removeDump():
     os.remove('/tmp/jsemple-dev-backup.sql')
