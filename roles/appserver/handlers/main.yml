@@ -1,0 +1,6 @@
+---
+- name: restart_backend
+  service:
+    name: "{{ backend_name }}"
+    state: restarted
+...
