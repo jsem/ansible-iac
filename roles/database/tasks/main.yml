@@ -76,6 +76,15 @@
       - updated_on timestamp with time zone
       - visible boolean NOT NULL DEFAULT true
 
+- name: create scripts directory
+  file:
+    path: "{{ script_root }}/{{ project_name }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+    recurse: yes
+
 - name: copy backup script
   copy:
     src: ../files/backup-database.py
