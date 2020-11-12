@@ -19,7 +19,8 @@ def main():
     encryptDump()
     credentials = loadCredentials()
     service = createService(credentials)
-    uploadEncryptedDump(service)
+    fileID = findExistingUpload(service)
+    uploadEncryptedDump(service, fileID)
     removeDump()
 
 def dumpPostgres():
@@ -55,11 +56,22 @@ def loadCredentials():
 def createService(creds):
     return build('drive', 'v3', credentials=creds)
 
-def uploadEncryptedDump(service):
+def findExistingUpload(service):
+    response = service.files().list(q="name='jsemple-dev-backup.sql.gpg'",
+                                    spaces='drive',
+                                    fields='files(id)').execute()
+    for file in response.get('files', []):
+        return file.get('id')
+    return None
+
+def uploadEncryptedDump(service, fileID):
     # Call the Drive v3 API
     file_metadata = {'name': 'jsemple-dev-backup.sql.gpg'}
     media = MediaFileUpload('/tmp/jsemple-dev-backup.sql.gpg', mimetype='text/plain')
-    return service.files().create(body=file_metadata, media_body=media).execute()
+    if fileID is None:
+        return service.files().create(body=file_metadata, media_body=media).execute()
+    else:
+        return service.files().update(file_id=fileID, body=file_metadata, media_body=media).execute()
 
 if __name__ == '__main__':
     main()
