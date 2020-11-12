@@ -10,7 +10,7 @@
   file:
     path: "{{ backend_root }}/{{ backend_name }}/config"
     state: directory
-    mode: 0644
+    mode: 0755
     owner: root
     group: root
     recurse: yes

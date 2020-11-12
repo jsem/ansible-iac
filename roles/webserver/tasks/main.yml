@@ -37,7 +37,7 @@
   file:
     path: "{{ web_root }}/{{ site_name }}"
     state: directory
-    mode: 0644
+    mode: 0755
     owner: root
     group: root
     recurse: yes
@@ -54,7 +54,7 @@
   file:
     path: "{{ web_ssl_dir }}"
     state: directory
-    mode: 0644
+    mode: 0755
     owner: root
     group: root
     recurse: yes
