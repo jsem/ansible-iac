@@ -9,9 +9,13 @@
       - platform-python-devel.x86_64
     state: present
 
-- name: install psycopg2
+- name: install pip packages
   pip:
-    name: psycopg2
+    name:
+      - psycopg2
+      - google-api-python-client
+      - google-auth-httplib2
+      - google-auth-oauthlib
     state: present
 
 - name: Initializing postgres
