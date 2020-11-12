@@ -57,7 +57,7 @@ def createService(creds):
     return build('drive', 'v3', credentials=creds)
 
 def findExistingUpload(service):
-    response = service.files().list(q="name='jsemple-dev-backup.sql.gpg'",
+    response = service.files().list(q="name='jsemple-dev-backup.sql.gpg' and trashed=false",
                                     spaces='drive',
                                     fields='files(id)').execute()
     for file in response.get('files', []):
