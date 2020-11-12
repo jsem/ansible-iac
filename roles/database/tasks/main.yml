@@ -18,12 +18,17 @@
       - google-auth-oauthlib
     state: present
 
+- name: Checking if postgresql is already initialised
+  stat: path=/var/lib/pgsql/data
+  register: postgres_initialised
+
 - name: Initializing postgres
   include: run_shell.yml
   vars:
     name: Initializing postgres
     command: postgresql-setup --initdb
     ignore_errors: yes
+  when: not postgres_initialised.stat.exists
 
 - name: set pg hba rules
   postgresql_pg_hba:
